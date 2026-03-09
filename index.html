@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DSA Mastery Guide — C++</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #080c10;
+            --surface: #0d1117;
+            --card: #111820;
+            --border: #1e2a38;
+            --accent: #00e5ff;
+            --accent2: #7c3aed;
+            --accent3: #f59e0b;
+            --accent4: #10b981;
+            --accent5: #ef4444;
+            --text: #e2eaf4;
+            --muted: #6b7f96;
+            --highlight: #1a2535;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ── NOISE OVERLAY ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 20px;
+            overflow: hidden;
+        }
+
+        .hero-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 229, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridFloat 20s linear infinite;
+        }
+
+        @keyframes gridFloat {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(40px);
+            }
+        }
+
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 229, 255, 0.08) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        .hero-badge {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 229, 255, 0.08);
+            border: 1px solid rgba(0, 229, 255, 0.25);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+            animation: fadeUp 0.8s ease both;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: blink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.2
+            }
+        }
+
+        .hero-title {
+            position: relative;
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            animation: fadeUp 0.8s 0.1s ease both;
+        }
+
+        .hero-title span.cyan {
+            color: var(--accent);
+        }
+
+        .hero-title span.purple {
+            color: #a78bfa;
+        }
+
+        .hero-sub {
+            position: relative;
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--muted);
+            max-width: 560px;
+            margin: 20px auto 40px;
+            font-weight: 300;
+            animation: fadeUp 0.8s 0.2s ease both;
+        }
+
+        .hero-stats {
+            position: relative;
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeUp 0.8s 0.3s ease both;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-num {
+            font-family: 'Space Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── LAYOUT ── */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── SECTION HEADER ── */
+        .section-header {
+            margin-bottom: 48px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .section-num {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 0.2em;
+            background: rgba(0, 229, 255, 0.08);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .section-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--border), transparent);
+        }
+
+        /* ── PHASE TIMELINE ── */
+        section {
+            padding: 80px 0;
+        }
+
+        .phases {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            position: relative;
+        }
+
+        .phases::before {
+            content: '';
+            position: absolute;
+            left: 28px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent), var(--accent2), var(--accent3), var(--accent4));
+            opacity: 0.4;
+        }
+
+        .phase {
+            display: flex;
+            gap: 32px;
+            align-items: flex-start;
+            padding: 0 0 56px 0;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .phase-dot {
+            flex-shrink: 0;
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .phase-content {
+            flex: 1;
+        }
+
+        .phase-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .phase-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .phase-desc {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .phase-duration {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--muted);
+            background: var(--highlight);
+            border: 1px solid var(--border);
+            padding: 4px 12px;
+            border-radius: 100px;
+            margin-bottom: 20px;
+        }
+
+        /* topics grid */
+        .topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .topic-tag {
+            font-size: 0.78rem;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-family: 'Space Mono', monospace;
+            border: 1px solid;
+        }
+
+        /* ── COLOR SCHEMES PER PHASE ── */
+        .p1 .phase-dot {
+            background: rgba(0, 229, 255, 0.1);
+            border: 2px solid rgba(0, 229, 255, 0.4);
+            color: var(--accent);
+        }
+
+        .p1 .phase-label,
+        .p1 .phase-title {
+            color: var(--accent);
+        }
+
+        .p1 .topic-tag {
+            background: rgba(0, 229, 255, 0.06);
+            border-color: rgba(0, 229, 255, 0.2);
+            color: var(--accent);
+        }
+
+        .p1 .phase-duration {
+            border-color: rgba(0, 229, 255, 0.2);
+        }
+
+        .p2 .phase-dot {
+            background: rgba(124, 58, 237, 0.1);
+            border: 2px solid rgba(124, 58, 237, 0.4);
+            color: #a78bfa;
+        }
+
+        .p2 .phase-label,
+        .p2 .phase-title {
+            color: #a78bfa;
+        }
+
+        .p2 .topic-tag {
+            background: rgba(124, 58, 237, 0.06);
+            border-color: rgba(124, 58, 237, 0.2);
+            color: #a78bfa;
+        }
+
+        .p2 .phase-duration {
+            border-color: rgba(124, 58, 237, 0.2);
+        }
+
+        .p3 .phase-dot {
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px solid rgba(245, 158, 11, 0.4);
+            color: var(--accent3);
+        }
+
+        .p3 .phase-label,
+        .p3 .phase-title {
+            color: var(--accent3);
+        }
+
+        .p3 .topic-tag {
+            background: rgba(245, 158, 11, 0.06);
+            border-color: rgba(245, 158, 11, 0.2);
+            color: var(--accent3);
+        }
+
+        .p3 .phase-duration {
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .p4 .phase-dot {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.4);
+            color: var(--accent4);
+        }
+
+        .p4 .phase-label,
+        .p4 .phase-title {
+            color: var(--accent4);
+        }
+
+        .p4 .topic-tag {
+            background: rgba(16, 185, 129, 0.06);
+            border-color: rgba(16, 185, 129, 0.2);
+            color: var(--accent4);
+        }
+
+        .p4 .phase-duration {
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .p5 .phase-dot {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid rgba(239, 68, 68, 0.4);
+            color: var(--accent5);
+        }
+
+        .p5 .phase-label,
+        .p5 .phase-title {
+            color: var(--accent5);
+        }
+
+        .p5 .topic-tag {
+            background: rgba(239, 68, 68, 0.06);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: var(--accent5);
+        }
+
+        .p5 .phase-duration {
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        /* ── CHANNELS GRID ── */
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .channel-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .channel-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .channel-card:hover {
+            border-color: rgba(0, 229, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .channel-card:hover::before {
+            opacity: 1;
+        }
+
+        .channel-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 16px;
+        }
+
+        .channel-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .channel-url {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+            letter-spacing: 0.05em;
+        }
+
+        .channel-desc {
+            color: var(--muted);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .channel-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .ctag {
+            font-size: 0.68rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Space Mono', monospace;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        .channel-card.starred {
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .channel-card.starred .channel-name::after {
+            content: ' ⭐';
+        }
+
+        /* ── PRACTICE PLATFORMS ── */
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .platform-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            transition: all 0.3s;
+        }
+
+        .platform-card:hover {
+            border-color: rgba(0, 229, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .platform-icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .platform-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .platform-desc {
+            color: var(--muted);
+            font-size: 0.82rem;
+            line-height: 1.5;
+        }
+
+        .platform-level {
+            display: inline-block;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+
+        .level-beg {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent4);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .level-mid {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent3);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .level-adv {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--accent5);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* ── TIPS GRID ── */
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .tip-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 22px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            transition: all 0.3s;
+        }
+
+        .tip-card:hover {
+            transform: translateX(4px);
+            border-color: rgba(124, 58, 237, 0.3);
+        }
+
+        .tip-num {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            background: rgba(124, 58, 237, 0.15);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #a78bfa;
+            font-weight: 700;
+        }
+
+        .tip-text {
+            color: var(--muted);
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+
+        .tip-text strong {
+            color: var(--text);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* ── COMPLEXITY TABLE ── */
+        .complexity-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .complexity-table th {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .complexity-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .complexity-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .complexity-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .complexity-table .ds-name {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .c-good {
+            color: var(--accent4);
+        }
+
+        .c-ok {
+            color: var(--accent3);
+        }
+
+        .c-bad {
+            color: var(--accent5);
+        }
+
+        .table-wrap {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        /* ── WEEK SCHEDULE ── */
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 10px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .day-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .day-name {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .day-task {
+            font-size: 0.78rem;
+            line-height: 1.4;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .day-card.rest {
+            background: rgba(239, 68, 68, 0.04);
+            border-color: rgba(239, 68, 68, 0.15);
+        }
+
+        .day-card.rest .day-task {
+            color: var(--accent5);
+        }
+
+        .day-card.highlight {
+            background: rgba(0, 229, 255, 0.05);
+            border-color: rgba(0, 229, 255, 0.2);
+        }
+
+        /* ── DIVIDER ── */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 0 auto;
+        }
+
+        /* ── FOOTER ── */
+        .footer {
+            padding: 60px 0 40px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        .footer .brand {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        /* ── NAV ── */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(8, 12, 16, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent);
+            letter-spacing: 0.1em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.78rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-family: 'Space Mono', monospace;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 640px) {
+            .nav-links {
+                display: none;
+            }
+
+            .week-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .phases::before {
+                display: none;
+            }
+
+            .phase {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .phase-dot {
+                width: 44px;
+                height: 44px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav class="nav">
+        <div class="nav-brand">DSA/C++ · ROADMAP</div>
+        <ul class="nav-links">
+            <li><a href="#phases">Phases</a></li>
+            <li><a href="#channels">Channels</a></li>
+            <li><a href="#practice">Practice</a></li>
+            <li><a href="#complexity">Complexity</a></li>
+            <li><a href="#tips">Tips</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-grid"></div>
+        <div class="hero-glow"></div>
+        <div class="container">
+            <div class="hero-badge">Complete Beginner's Roadmap 2025</div>
+            <h1 class="hero-title">
+                Master <span class="cyan">DSA</span><br />
+                in <span class="purple">C++</span>
+            </h1>
+            <p class="hero-sub">
+                A thorough, structured guide to go from zero to interview-ready — with the best video resources,
+                practice platforms, and weekly schedules.
+            </p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-num">5</div>
+                    <div class="stat-label">Phases</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num">6–9</div>
+                    <div class="stat-label">Months</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num">40+</div>
+                    <div class="stat-label">Topics</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num">8</div>
+                    <div class="stat-label">YT Channels</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- PHASE TIMELINE -->
+    <section id="phases">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-num">01</span>
+                <h2 class="section-title">Learning Phases</h2>
+                <div class="section-line"></div>
+            </div>
+
+            <div class="phases">
+
+                <!-- PHASE 1 -->
+                <div class="phase p1">
+                    <div class="phase-dot">P1</div>
+                    <div class="phase-content">
+                        <div class="phase-label">Phase 1 — Foundation</div>
+                        <div class="phase-title">C++ Fundamentals</div>
+                        <div class="phase-desc">Before DSA, master the language. Focus on syntax, pointers, memory
+                            management, references, and the STL basics. You need to think in C++ before you write
+                            algorithms.</div>
+                        <div class="phase-duration">⏱ 3 – 4 Weeks</div>
+                        <div class="topics">
+                            <span class="topic-tag">Variables & Types</span>
+                            <span class="topic-tag">Loops & Conditionals</span>
+                            <span class="topic-tag">Functions & Scope</span>
+                            <span class="topic-tag">Pointers & References</span>
+                            <span class="topic-tag">Arrays & Strings</span>
+                            <span class="topic-tag">Structs & Classes</span>
+                            <span class="topic-tag">STL: vector, map, set</span>
+                            <span class="topic-tag">Memory: new / delete</span>
+                            <span class="topic-tag">Time & Space Complexity</span>
+                            <span class="topic-tag">Big O Notation</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHASE 2 -->
+                <div class="phase p2">
+                    <div class="phase-dot">P2</div>
+                    <div class="phase-content">
+                        <div class="phase-label">Phase 2 — Linear Structures</div>
+                        <div class="phase-title">Arrays, Strings, Linked Lists, Stacks & Queues</div>
+                        <div class="phase-desc">Build the core linear data structures from scratch. Understand when and
+                            why each structure is used. This is the most heavily tested category in coding interviews.
+                        </div>
+                        <div class="phase-duration">⏱ 5 – 6 Weeks</div>
+                        <div class="topics">
+                            <span class="topic-tag">Static & Dynamic Arrays</span>
+                            <span class="topic-tag">Two Pointer Technique</span>
+                            <span class="topic-tag">Sliding Window</span>
+                            <span class="topic-tag">String Manipulation</span>
+                            <span class="topic-tag">Singly Linked List</span>
+                            <span class="topic-tag">Doubly Linked List</span>
+                            <span class="topic-tag">Circular Linked List</span>
+                            <span class="topic-tag">Stack (Array & LL)</span>
+                            <span class="topic-tag">Queue & Deque</span>
+                            <span class="topic-tag">Priority Queue</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHASE 3 -->
+                <div class="phase p3">
+                    <div class="phase-dot">P3</div>
+                    <div class="phase-content">
+                        <div class="phase-label">Phase 3 — Non-Linear Structures</div>
+                        <div class="phase-title">Trees, Heaps & Hashing</div>
+                        <div class="phase-desc">Step into the non-linear world. Trees and graphs are the backbone of
+                            advanced problem solving. Master traversals, BST operations, and hash maps deeply.</div>
+                        <div class="phase-duration">⏱ 6 – 7 Weeks</div>
+                        <div class="topics">
+                            <span class="topic-tag">Binary Tree</span>
+                            <span class="topic-tag">Binary Search Tree</span>
+                            <span class="topic-tag">Tree Traversals (BFS/DFS)</span>
+                            <span class="topic-tag">AVL Tree</span>
+                            <span class="topic-tag">Min/Max Heap</span>
+                            <span class="topic-tag">Hash Table</span>
+                            <span class="topic-tag">Collision Handling</span>
+                            <span class="topic-tag">Trie</span>
+                            <span class="topic-tag">Segment Tree</span>
+                            <span class="topic-tag">Fenwick Tree (BIT)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHASE 4 -->
+                <div class="phase p4">
+                    <div class="phase-dot">P4</div>
+                    <div class="phase-content">
+                        <div class="phase-label">Phase 4 — Algorithms</div>
+                        <div class="phase-title">Sorting, Searching, Graphs & Recursion</div>
+                        <div class="phase-desc">Now apply structures to algorithms. Learn classic algorithms, graph
+                            theory (BFS/DFS/Dijkstra), and divide-and-conquer strategies. This is where you start
+                            solving real problems fast.</div>
+                        <div class="phase-duration">⏱ 7 – 8 Weeks</div>
+                        <div class="topics">
+                            <span class="topic-tag">Bubble / Selection / Insertion Sort</span>
+                            <span class="topic-tag">Merge Sort</span>
+                            <span class="topic-tag">Quick Sort</span>
+                            <span class="topic-tag">Heap Sort</span>
+                            <span class="topic-tag">Binary Search</span>
+                            <span class="topic-tag">Recursion & Backtracking</span>
+                            <span class="topic-tag">Graph Representation</span>
+                            <span class="topic-tag">BFS & DFS</span>
+                            <span class="topic-tag">Dijkstra's Algorithm</span>
+                            <span class="topic-tag">Bellman-Ford</span>
+                            <span class="topic-tag">Floyd-Warshall</span>
+                            <span class="topic-tag">Kruskal & Prim (MST)</span>
+                            <span class="topic-tag">Topological Sort</span>
+                            <span class="topic-tag">Union-Find (DSU)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHASE 5 -->
+                <div class="phase p5">
+                    <div class="phase-dot">P5</div>
+                    <div class="phase-content">
+                        <div class="phase-label">Phase 5 — Advanced</div>
+                        <div class="phase-title">Dynamic Programming, Greedy & Competitive Prep</div>
+                        <div class="phase-desc">The final boss. DP is the single most important topic for FAANG
+                            interviews and competitive programming. Master patterns: knapsack, LCS, LIS, DP on trees,
+                            and bitmask DP.</div>
+                        <div class="phase-duration">⏱ 8 – 10 Weeks</div>
+                        <div class="topics">
+                            <span class="topic-tag">Memoization vs Tabulation</span>
+                            <span class="topic-tag">1D & 2D DP</span>
+                            <span class="topic-tag">0/1 Knapsack</span>
+                            <span class="topic-tag">Unbounded Knapsack</span>
+                            <span class="topic-tag">LCS & LIS</span>
+                            <span class="topic-tag">Matrix Chain Multiplication</span>
+                            <span class="topic-tag">DP on Trees</span>
+                            <span class="topic-tag">Bitmask DP</span>
+                            <span class="topic-tag">Greedy Algorithms</span>
+                            <span class="topic-tag">Activity Selection</span>
+                            <span class="topic-tag">Bit Manipulation</span>
+                            <span class="topic-tag">Math for CP</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- YOUTUBE CHANNELS -->
+    <section id="channels">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-num">02</span>
+                <h2 class="section-title">Best YouTube Channels</h2>
+                <div class="section-line"></div>
+            </div>
+
+            <div class="channels-grid">
+
+                <div class="channel-card starred">
+                    <div class="channel-icon" style="background:rgba(0,229,255,0.1);">🎯</div>
+                    <div class="channel-name">takeUforward (Striver)</div>
+                    <div class="channel-url">youtube.com/@takeUforward</div>
+                    <div class="channel-desc">The single best free DSA resource for C++. Raj Vikramaditya (SWE-III @
+                        Google) covers every topic with extreme depth — arrays to DP. Includes the famous "Striver's SDE
+                        Sheet" and "A2Z Sheet".</div>
+                    <div class="channel-tags">
+                        <span class="ctag">C++</span><span class="ctag">All Topics</span><span
+                            class="ctag">Interviews</span><span class="ctag">Beginner Friendly</span>
+                    </div>
+                </div>
+
+                <div class="channel-card starred">
+                    <div class="channel-icon" style="background:rgba(124,58,237,0.1);">📐</div>
+                    <div class="channel-name">Abdul Bari</div>
+                    <div class="channel-url">youtube.com/@abdul_bari</div>
+                    <div class="channel-desc">Legendary for mathematical depth and whiteboard-style teaching. His DSA
+                        playlist of 84+ videos is a masterclass. Perfect for understanding the "why" behind every
+                        algorithm with full visual diagrams.</div>
+                    <div class="channel-tags">
+                        <span class="ctag">Theory</span><span class="ctag">Algorithms</span><span
+                            class="ctag">Visuals</span><span class="ctag">Deep Dives</span>
+                    </div>
+                </div>
+
+                <div class="channel-card">
+                    <div class="channel-icon" style="background:rgba(245,158,11,0.1);">🧩</div>
+                    <div class="channel-name">NeetCode</div>
+                    <div class="channel-url">youtube.com/@NeetCode</div>
+                    <div class="channel-desc">Best channel for LeetCode problem solving. Every video starts with a clear
+                        problem diagram, then builds to optimal solutions. Essential for interview grinding. Also has a
+                        structured roadmap (neetcode.io).</div>
+                    <div class="channel-tags">
+                        <span class="ctag">LeetCode</span><span class="ctag">Patterns</span><span
+                            class="ctag">Interviews</span>
+                    </div>
+                </div>
+
+                <div class="channel-card">
+                    <div class="channel-icon" style="background:rgba(16,185,129,0.1);">🔬</div>
+                    <div class="channel-name">mycodeschool</div>
+                    <div class="channel-url">youtube.com/@mycodeschool</div>
+                    <div class="channel-desc">Although no longer updated, remains one of the best foundational DSA
+                        channels on YouTube. 15-minute focused videos on arrays, linked lists, trees, and sorting —
+                        great for absolute beginners.</div>
+                    <div class="channel-tags">
+                        <span class="ctag">Fundamentals</span><span class="ctag">Beginners</span><span
+                            class="ctag">Concise</span>
+                    </div>
+                </div>
+
+                <div class="channel-card">
+                    <div class="channel-icon" style="background:rgba(239,68,68,0.1);">⚡</div>
+                    <div class="channel-name">Luv</div>
+                    <div class="channel-url">youtube.com/@LuvIsMe</div>
+                    <div class="channel-desc">Excellent Hindi/English DSA content specifically in C++. Very popular
+                        among Indian students. Covers complete DSA from scratch with coding problems. Highly recommended
+                        if English isn't your first language.</div>
+                    <div class="channel-tags">
+                        <span class="ctag">C++</span><span class="ctag">Hindi</span><span
+                            class="ctag">Beginners</span><span class="ctag">Full Course</span>
+                    </div>
+                </div>
+
+                <div class="channel-card">
+                    <div class="channel-icon" style="background:rgba(0,229,255,0.08);">🏗️</div>
+                    <div class="channel-name">WilliamFiset</div>
+                    <div class="channel-url">youtube.com/@WilliamFiset</div>
+                    <div class="channel-desc">Specialized deep-dives into advanced data structures: segment trees,
+                        Fenwick trees, advanced graph theory. Perfect for Phase 3-5 learners who want to go beyond the
+                        basics into competitive programming territory.</div>
+                    <div class="channel-tags">
+                        <span class="ctag">Advanced</span><span class="ctag">Graphs</span><span
+                            class="ctag">Trees</span><span class="ctag">CP</span>
+                    </div>
+                </div>
+
+                <div class="channel-card">
+                    <div class="channel-icon" style="background:rgba(124,58,237,0.08);">📚</div>
+                    <div class="channel-name">GeeksforGeeks</div>
+                    <div class="channel-url">youtube.com/@GeeksforGeeksVideos</div>
+                    <div class="channel-desc">The official GFG channel. Covers virtually every DSA topic. Best used as a
+                        supplement and reference — look up specific topics you're stuck on. Pairs perfectly with their
+                        written articles.</div>
+                    <div class="channel-tags">
+                        <span class="ctag">Reference</span><span class="ctag">All Topics</span><span class="ctag">Wide
+                            Coverage</span>
+                    </div>
+                </div>
+
+                <div class="channel-card">
+                    <div class="channel-icon" style="background:rgba(16,185,129,0.08);">🎓</div>
+                    <div class="channel-name">freeCodeCamp.org</div>
+                    <div class="channel-url">youtube.com/@freecodecamp</div>
+                    <div class="channel-desc">Hosts full-length DSA + C++ courses (often 5-10+ hours). Great for
+                        structured full-course learning. Their "Data Structures Full Course" and "C++ Full Course" are
+                        regularly updated and completely free.</div>
+                    <div class="channel-tags">
+                        <span class="ctag">Full Courses</span><span class="ctag">Structured</span><span
+                            class="ctag">Free</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- PRACTICE PLATFORMS -->
+    <section id="practice">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-num">03</span>
+                <h2 class="section-title">Practice Platforms</h2>
+                <div class="section-line"></div>
+            </div>
+
+            <div class="platforms-grid">
+                <div class="platform-card">
+                    <div class="platform-icon">🟧</div>
+                    <div>
+                        <div class="platform-name">LeetCode</div>
+                        <div class="platform-desc">The gold standard for interview prep. 2500+ problems sorted by topic,
+                            company, difficulty. Essential for FAANG preparation.</div>
+                        <span class="platform-level level-mid">Beginner → Advanced</span>
+                    </div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🟢</div>
+                    <div>
+                        <div class="platform-name">Codeforces</div>
+                        <div class="platform-desc">Best platform for competitive programming. Regular contests (Div. 2 &
+                            3 for beginners). Massive problem archive with editorial solutions.</div>
+                        <span class="platform-level level-adv">Intermediate → Expert</span>
+                    </div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🔵</div>
+                    <div>
+                        <div class="platform-name">GeeksforGeeks</div>
+                        <div class="platform-desc">Best for learning-while-solving. Problems tied to theory articles.
+                            DSA Self-Paced course is excellent for structured beginners.</div>
+                        <span class="platform-level level-beg">Beginner Friendly</span>
+                    </div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">⚔️</div>
+                    <div>
+                        <div class="platform-name">CodeChef</div>
+                        <div class="platform-desc">Monthly long challenges and short contests. Great for beginners to
+                            intermediates. Has curated learning paths with video editorials.</div>
+                        <span class="platform-level level-beg">Beginner → Mid</span>
+                    </div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🔴</div>
+                    <div>
+                        <div class="platform-name">HackerRank</div>
+                        <div class="platform-desc">Structured domain-based challenges (Arrays, Trees, DP).
+                            Company-specific practice kits. Great for DSA certificates.</div>
+                        <span class="platform-level level-beg">Beginner</span>
+                    </div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🌊</div>
+                    <div>
+                        <div class="platform-name">AtCoder</div>
+                        <div class="platform-desc">High-quality problems from Japan's top CP community. ABC (Beginner)
+                            contests are perfectly designed for skill progression.</div>
+                        <span class="platform-level level-mid">Intermediate</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- WEEKLY SCHEDULE -->
+    <section id="schedule">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-num">04</span>
+                <h2 class="section-title">Ideal Weekly Schedule</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="week-grid">
+                <div class="day-card highlight">
+                    <div class="day-name">Mon</div>
+                    <div class="day-task">Learn new topic via video</div>
+                </div>
+                <div class="day-card">
+                    <div class="day-name">Tue</div>
+                    <div class="day-task">Implement from scratch + dry run</div>
+                </div>
+                <div class="day-card">
+                    <div class="day-name">Wed</div>
+                    <div class="day-task">Solve 3 easy problems on topic</div>
+                </div>
+                <div class="day-card highlight">
+                    <div class="day-name">Thu</div>
+                    <div class="day-task">Solve 2 medium problems</div>
+                </div>
+                <div class="day-card">
+                    <div class="day-name">Fri</div>
+                    <div class="day-task">Revise + tackle 1 hard problem</div>
+                </div>
+                <div class="day-card">
+                    <div class="day-name">Sat</div>
+                    <div class="day-task">Contest or mock interview</div>
+                </div>
+                <div class="day-card rest">
+                    <div class="day-name">Sun</div>
+                    <div class="day-task">Rest / Review weak areas</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- COMPLEXITY TABLE -->
+    <section id="complexity">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-num">05</span>
+                <h2 class="section-title">Complexity Cheat Sheet</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="table-wrap">
+                <table class="complexity-table">
+                    <thead>
+                        <tr>
+                            <th>Data Structure</th>
+                            <th>Access</th>
+                            <th>Search</th>
+                            <th>Insert</th>
+                            <th>Delete</th>
+                            <th>Space</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="ds-name">Array</td>
+                            <td class="c-good">O(1)</td>
+                            <td class="c-ok">O(n)</td>
+                            <td class="c-bad">O(n)</td>
+                            <td class="c-bad">O(n)</td>
+                            <td class="c-good">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td class="ds-name">Linked List</td>
+                            <td class="c-bad">O(n)</td>
+                            <td class="c-bad">O(n)</td>
+                            <td class="c-good">O(1)</td>
+                            <td class="c-good">O(1)</td>
+                            <td class="c-good">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td class="ds-name">Stack / Queue</td>
+                            <td class="c-bad">O(n)</td>
+                            <td class="c-bad">O(n)</td>
+                            <td class="c-good">O(1)</td>
+                            <td class="c-good">O(1)</td>
+                            <td class="c-good">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td class="ds-name">Hash Table</td>
+                            <td class="c-ok">O(1)*</td>
+                            <td class="c-good">O(1)*</td>
+                            <td class="c-good">O(1)*</td>
+                            <td class="c-good">O(1)*</td>
+                            <td class="c-good">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td class="ds-name">BST (balanced)</td>
+                            <td class="c-ok">O(log n)</td>
+                            <td class="c-good">O(log n)</td>
+                            <td class="c-good">O(log n)</td>
+                            <td class="c-good">O(log n)</td>
+                            <td class="c-good">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td class="ds-name">Heap</td>
+                            <td class="c-bad">O(n)</td>
+                            <td class="c-bad">O(n)</td>
+                            <td class="c-ok">O(log n)</td>
+                            <td class="c-ok">O(log n)</td>
+                            <td class="c-good">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td class="ds-name">Trie</td>
+                            <td class="c-ok">O(k)</td>
+                            <td class="c-ok">O(k)</td>
+                            <td class="c-ok">O(k)</td>
+                            <td class="c-ok">O(k)</td>
+                            <td class="c-bad">O(n·k)</td>
+                        </tr>
+                        <tr>
+                            <td class="ds-name">Graph (adj. list)</td>
+                            <td>—</td>
+                            <td class="c-ok">O(V+E)</td>
+                            <td class="c-good">O(1)</td>
+                            <td class="c-ok">O(E)</td>
+                            <td class="c-ok">O(V+E)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- TIPS -->
+    <section id="tips">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-num">06</span>
+                <h2 class="section-title">Pro Tips for Beginners</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <div class="tip-num">01</div>
+                    <div class="tip-text"><strong>Code before you copy</strong>Attempt every problem for at least 20–30
+                        minutes before watching a solution. Struggling builds intuition that watching passively cannot.
+                    </div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-num">02</div>
+                    <div class="tip-text"><strong>Master one topic at a time</strong>Don't jump around. Spend a full
+                        week on arrays, then move to linked lists. Depth beats breadth for long-term retention.</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-num">03</div>
+                    <div class="tip-text"><strong>Use Striver's A2Z Sheet</strong>Follow the takeUforward A2Z DSA Sheet
+                        as your primary problem tracker. It's battle-tested for FAANG interviews with 450+ problems in
+                        order.</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-num">04</div>
+                    <div class="tip-text"><strong>Always analyze complexity</strong>After every solution, ask: "What is
+                        the time and space complexity?" This habit separates good programmers from great ones.</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-num">05</div>
+                    <div class="tip-text"><strong>Enter Codeforces Div. 3 contests</strong>Do a Codeforces Div. 3
+                        contest every week once you finish Phase 2. Timed pressure reveals true understanding vs false
+                        familiarity.</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-num">06</div>
+                    <div class="tip-text"><strong>Revise with spaced repetition</strong>Problems you solve today will
+                        fade. Re-attempt solved problems after 3 days, 1 week, and 1 month. Revisit before interviews.
+                    </div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-num">07</div>
+                    <div class="tip-text"><strong>Build pattern recognition</strong>Most DSA problems fall into 15–20
+                        patterns (sliding window, two pointers, BFS, DP knapsack…). Learn to recognize the pattern
+                        before the problem.</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-num">08</div>
+                    <div class="tip-text"><strong>Don't ignore STL</strong>In C++, std::vector, std::map,
+                        std::priority_queue, std::unordered_map are your best friends. Master the STL — it saves time
+                        and avoids bugs in contests and interviews.</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-num">09</div>
+                    <div class="tip-text"><strong>Consistency over intensity</strong>2 hours every day beats 14 hours
+                        every weekend. DSA is a marathon. Set a daily streak goal and protect it like a habit, not a
+                        chore.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="brand">DSA × C++</div>
+            <p>Consistent practice beats talent. Start today, stay daily.</p>
+            <p style="margin-top:8px; font-family: 'Space Mono', monospace; font-size:0.65rem; letter-spacing:0.1em;">
+                Roadmap · 2025 Edition</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>
